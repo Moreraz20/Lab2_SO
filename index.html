@@ -13,57 +13,44 @@
 <body>
     <div class="todo">
         <div class="tablaProcesos">
-            <!--<table class="tabla">
-            <caption>Procesos</caption>
-            <thead>
-                <tr>
-                    <th rowspan="2">Proceso</th>
-                    <th rowspan="2">Instante llegada</th>
-                    <th rowspan="2">Ejecución t</th>
-                    <th colspan="2">Bloqueo</th>
-                </tr>
-                <tr>
-                    <th>Inicio</th>
-                    <th>Duración</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            <tbody>
-        </table>-->
+            <table class="tabla">
+                <caption>Procesos</caption>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Proceso</th>
+                        <th rowspan="2">Instante llegada</th>
+                        <th rowspan="2">Ejecución t</th>
+                        <th colspan="2">Bloqueo</th>
+                    </tr>
+                    <tr>
+                        <th>Inicio</th>
+                        <th>Duración</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProcesos">
+                <tbody>
+            </table>
         </div>
         <div class="tablaResultados">
-            <!--<table class="tabla">
-            <caption>Procesos</caption>
-            <thead>
-                <tr>
-                    <th>Proceso</th>
-                    <th>Instante llegada</th>
-                    <th>Ejecución t</th>
-                    <th>Bloqueo</th>
-                    <th>Bloqueo</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;inicio</td>
-                    <td style="background-color: red;">duración</td>
-                </tr>
-            <tbody>
-        </table>-->
+            <table class="tabla">
+                <caption>General</caption>
+                <thead>
+                    <tr>
+                        <th>Proceso</th>
+                        <th>Instante llegada</th>
+                        <th>Ejecución t</th>
+                        <th>Bloqueo</th>
+                        <th>Bloqueo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+            </table>
 
         </div>
-        <div class="grafico">Grafico</div>
-        <button onclick="prueba()">Aqui</button>
+        <div class="grafico">
+            <div id="contenedorGrafico" class="contenedorGrafico"></div>
+        </div>
     </div>
 </body>
 
