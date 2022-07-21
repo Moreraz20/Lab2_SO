@@ -98,6 +98,13 @@ body {
     min-width: 25px;
 }
 
+.dispacher{
+    border: 2px solid #000000;
+    background-color: rgb(61, 224, 233);
+    max-width: 50px;
+    min-width: 25px;
+}
+
 /*CSS PARA EL NAV*/
 
 .wrapper {

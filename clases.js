@@ -5,7 +5,7 @@ export default class Proceso {
     this.ejecucion = ejecucion;
     this.bloqueo = bloqueo;
     this.estado = estado;
-    this.estadoTiempo = { ejecucion: 0, bloqueo: 0 };
+    this.estadoTiempo = { ejecucion: 0, bloqueo: 0, dispacher: 0 };
   }
 
   agregarTabla(tabla) {
@@ -119,6 +119,35 @@ export class Grafico {
       divNum.innerHTML = tiempo;
       divNum.setAttribute("style", "grid-column: " + (tiempo + 2) + ";");
       divContenedorNum.appendChild(divNum);
+    }
+  }
+
+  agregarDispatcher(tiempo) {
+    const contenedorGrafico = document.getElementById("contenedorGrafico");
+    const divNum = document.getElementById("grafico_proceso_numeros");
+    let contenedor = document.getElementById("grafico_dispatcher");
+    if (contenedor) {
+    } else {
+      contenedor = document.createElement("div");
+      contenedor.id = "grafico_dispatcher";
+      contenedor.setAttribute("class", "proceso");
+
+      const divNombre = document.createElement("div");
+      divNombre.innerHTML = "Dis";
+
+      contenedor.appendChild(divNombre);
+
+      contenedorGrafico.insertBefore(contenedor, divNum);
+    }
+
+    let divDispa = document.getElementById("dispacher_" + tiempo);
+    if (divDispa) {
+    } else {
+      divDispa = document.createElement("div");
+      divDispa.id = "dispacher_" + tiempo;
+      divDispa.setAttribute("class", "dispacher");
+      divDispa.setAttribute("style", "grid-column: " + (tiempo + 2) + ";");
+      contenedor.appendChild(divDispa);
     }
   }
 
@@ -567,6 +596,220 @@ export class SRTF {
         contFinal++;
       }
     });
+
+    if (contFinal > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
+export class RR {
+  constructor(listProcesos, grafico, dispacher) {
+    this.listProcesos = listProcesos;
+    this.grafico = grafico;
+    this.colaEspera = new Cola();
+    this.listBloqueo = [];
+    this.procesoEje = null;
+    this.cpu = new CPU(null, null, null, null, null, null, null);
+    this.dispacher = { estado: true, total: dispacher };
+  }
+
+  ejecutar(tiempo) {
+    //Agregar los procesos a la cola de espera cuando lleguen
+    this.listProcesos.forEach((element) => {
+      if (element.llegada == tiempo) {
+        element.estado = "espera";
+        this.colaEspera.encolar(element);
+      }
+    });
+
+    //Colocar los procesos bloqueados en el grafico
+    if (this.listBloqueo.length > 0) {
+      this.listBloqueo.forEach((element, index) => {
+        this.grafico.agregarEstado(element, tiempo);
+        element.estadoTiempo.bloqueo++;
+      });
+    }
+
+    //Verificar si el proceso ya termino
+    this.colaEspera.contenido.forEach((element) => {
+      if (element.estadoTiempo.ejecucion >= element.ejecucion) {
+        element.estado = "final";
+        /*************************************************************************************************************/
+        console.log("Comprobacion:");
+        console.log(JSON.parse(JSON.stringify(element)));
+        /*************************************************************************************************************/
+      }
+      let aux = [];
+      this.colaEspera.contenido.forEach((element2, index) => {
+        if (element2.estado == "final") {
+          aux.push(index);
+        }
+      });
+      aux.forEach((element2) => {
+        this.colaEspera.contenido.splice(element2, 1);
+      });
+      if (this.procesoEje != null) {
+        if (this.procesoEje.nombre == element.nombre) {
+          this.procesoEje = null;
+        }
+      }
+    });
+
+    if(this.procesoEje != null){
+      if(this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion){
+        this.procesoEje.estado = "final";
+        this.procesoEje = null;
+        this.dispacher.estado = true;
+      }
+    }
+
+    // if (this.procesoEje != null) {
+    //   if (this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion) {
+    //     this.procesoEje.estado = "final";
+    //     let aux = [];
+    //     this.colaEspera.contenido.forEach((element, index) => {
+    //       if (element.estado == "final") {
+    //         aux.push(index);
+    //       }
+    //     });
+    //     aux.forEach((element) => {
+    //       this.colaEspera.contenido.splice(element, 1);
+    //     });
+    //     this.procesoEje = null;
+    //   }
+    // }
+
+    //Se elige elproceso mas corto
+    // if (!this.colaEspera.colaVacia() && this.procesoEje == null) {
+    //   let auxCont = 0;
+    //   while (
+    //     auxCont < this.colaEspera.contenido.length - 1 &&
+    //     this.colaEspera.contenido[auxCont].estado == "bloqueado"
+    //   ) {
+    //     auxCont++;
+    //   }
+    //   let auxproceso = this.colaEspera.contenido[auxCont];
+    //   if (auxproceso.estado == "espera") {
+    //     this.colaEspera.contenido.forEach((element) => {
+    //       if (
+    //         element.ejecucion - element.estadoTiempo.ejecucion <
+    //           auxproceso.ejecucion - auxproceso.estadoTiempo.ejecucion &&
+    //         element.estado == "espera"
+    //       ) {
+    //         auxproceso = element;
+    //       }
+    //     });
+    //     this.procesoEje = auxproceso;
+    //     this.procesoEje.estado = "ejecucion";
+    //     this.procesoEje.estadoTiempo.ejecucion++;
+    //   }
+    // } else {
+    //   if (this.procesoEje != null) {
+    //     this.procesoEje.estadoTiempo.ejecucion++;
+    //   }
+    // }
+
+    if (this.procesoEje != null) {
+      if (this.procesoEje.estado == "final") {
+        this.procesoEje = null;
+        this.dispacher.estado = true;
+      }
+    }
+
+    if (!this.dispacher.estado) {
+      while (true) {
+        if (this.procesoEje == null) {
+          if (!this.colaEspera.colaVacia()) {
+            this.procesoEje = this.colaEspera.deencolar();
+            this.procesoEje.estado = "ejecucion";
+            this.procesoEje.estadoTiempo.ejecucion++;
+            this.procesoEje.estadoTiempo.dispacher++;
+          }
+          break;
+        }
+        if (this.procesoEje != null) {
+          this.procesoEje.estadoTiempo.ejecucion++;
+          this.procesoEje.estadoTiempo.dispacher++;
+          break;
+        }
+      }
+    }
+
+    if (this.procesoEje != null || this.dispacher.estado == true) {
+      if (this.dispacher.estado) {
+        this.grafico.agregarDispatcher(tiempo);
+        this.dispacher.estado = false;
+        this.procesoEje = null;
+      } else {
+        this.grafico.agregarEstado(this.procesoEje, tiempo);
+      }
+
+      if (this.procesoEje != null) {
+        //Verificar si el proceso entra a bloqueo
+        if (
+          this.procesoEje.estadoTiempo.ejecucion ==
+          this.procesoEje.bloqueo.inicio
+        ) {
+          this.procesoEje.estado = "bloqueado";
+          this.procesoEje.estadoTiempo.dispacher = 0;
+          this.listBloqueo.push(this.procesoEje);
+          this.procesoEje = null;
+          this.dispacher.estado = true;
+        }
+      }
+    }
+
+    //Agregar los espacios de espera y vacios al diagrama
+    this.listProcesos.forEach((element) => {
+      if (
+        element.estado == "vacio" ||
+        element.estado == "espera" ||
+        element.estado == "final"
+      ) {
+        this.grafico.agregarEstado(element, tiempo);
+      }
+    });
+
+    if (this.procesoEje != null) {
+      //Verifica si el proceso ya paso el quantum
+      if (this.procesoEje.estadoTiempo.dispacher == this.dispacher.total) {
+        this.procesoEje.estado = "espera";
+        this.procesoEje.estadoTiempo.dispacher = 0;
+        this.colaEspera.encolar(this.procesoEje);
+        this.procesoEje = null;
+        this.dispacher.estado = true;
+      }
+    }
+
+    //Verificar si el proceso bloqueado ya termino el bloqueo
+    let auxIndex = [];
+    this.listBloqueo.forEach((element, index) => {
+      if (element.estadoTiempo.bloqueo == element.bloqueo.duracion) {
+        auxIndex.push(index);
+        element.estado = "espera";
+        element.estadoTiempo.dispacher = 0;
+        this.colaEspera.encolar(element);
+      }
+    });
+    auxIndex.forEach((element) => {
+      this.listBloqueo.splice(element, 1);
+    });
+
+    //Verificar cuantos procesos no han finalizado
+    let contFinal = 0;
+    this.listProcesos.forEach((element) => {
+      if (element.estado != "final") {
+        contFinal++;
+      }
+    });
+
+    /*************************************************************************************************************/
+    // console.log("Cola de espera:");
+    // console.log(JSON.parse(JSON.stringify(this.colaEspera.contenido)));
+    /*************************************************************************************************************/
 
     if (contFinal > 0) {
       return false;
