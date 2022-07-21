@@ -16,6 +16,13 @@ export default class Proceso {
     const td2 = document.createElement("td");
     td2.innerHTML = this.nombre; //Columna Nombre
 
+    const botonEliminarPoceso = document.createElement("button");
+    botonEliminarPoceso.id = this.nombre;
+    botonEliminarPoceso.innerHTML = "x";
+    botonEliminarPoceso.setAttribute("onclick","eliminarProceso(id)");
+
+    td2.appendChild(botonEliminarPoceso);
+
     const td3 = document.createElement("td");
     td3.innerHTML = this.llegada; //Columna llegada
 
@@ -100,6 +107,14 @@ export class CPU {
     while (tabla.firstChild) {
       tabla.removeChild(tabla.firstChild);
     }
+  }
+
+  modificarProceso(){
+    const contendorModificarProceso = document.createElement("div");
+    contendorModificarProceso.id = "contenedor_modificar_proceso";
+    contendorModificarProceso.setAttribute("class","contendorModificarProceso");
+
+    
   }
 }
 

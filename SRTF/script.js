@@ -69,6 +69,35 @@ window.reiniciar = function reiniciar() {
   contenedorBoton.appendChild(botonCorrer);
 };
 
+window.eliminarProceso = function eliminarProceso(id) {
+  let aux = 0;
+
+  listaProcesos.forEach((element, index) => {
+    if (element.nombre == id) {
+      aux = index;
+    }
+  });
+
+  listaProcesos.splice(aux, 1);
+
+  grafico.eliminarProceso(contenedorGrafico);
+  grafico.crearProceso(listaProcesos, contenedorGrafico);
+
+  const tablaProcesos = document.getElementById("tablaProcesos");
+  listaProcesos[0].eliminarTabla(tablaProcesos);
+  listaProcesos.forEach((element) => {
+    element.agregarTabla(tabla);
+  });
+
+  fcfs = new FCFS(listaProcesos, grafico);
+
+  cpu = new CPU(listaProcesos);
+  cpu.construirTabla();
+
+  cont = 0;
+  
+};
+
 function crearProcesos() {
   const procesoA = new Proceso("A", 0, 6, { inicio: 3, duracion: 2 }, "vacio");
   const procesoB = new Proceso("B", 1, 8, { inicio: 1, duracion: 3 }, "vacio");
