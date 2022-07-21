@@ -68,6 +68,8 @@ body {
 .espera {
     border: 2px solid #000000;
     background-color: gray;
+    max-width: 50px;
+    min-width: 25px;
 }
 
 .ejecucion {
@@ -78,6 +80,13 @@ body {
 }
 .vacio {
     border: 2px solid #cbc7c7;
+    max-width: 50px;
+    min-width: 25px;
+}
+
+.bloqueado{
+    border: 2px solid #000000;
+    background-color: red;
     max-width: 50px;
     min-width: 25px;
 }
