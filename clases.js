@@ -47,15 +47,13 @@ export default class Proceso {
 }
 
 export class CPU {
-  constructor(
-    listaproceso
-  ) {
+  constructor(listaproceso) {
     this.listaproceso = listaproceso;
   }
-  construirTabla(){
+  construirTabla() {
     const tablaGeneral = document.getElementById("tablaGeneral");
     this.destruirTabla();
-    this.listaproceso.forEach(element => {
+    this.listaproceso.forEach((element) => {
       const tr = document.createElement("tr");
 
       const td = document.createElement("td");
@@ -65,23 +63,25 @@ export class CPU {
       td2.innerHTML = element.instanteFin;
 
       const td3 = document.createElement("td");
-      if(element.instanteFin != null){
-        td3.innerHTML = (element.instanteFin - element.llegada);
-      }else{
+      if (element.instanteFin != null) {
+        td3.innerHTML = element.instanteFin - element.llegada;
+      } else {
         td3.innerHTML = null;
       }
 
       const td4 = document.createElement("td");
-      if(element.instanteFin != null){
-        td4.innerHTML = ((element.instanteFin - element.llegada)-element.ejecucion);
-      }else{
+      if (element.instanteFin != null) {
+        td4.innerHTML =
+          element.instanteFin - element.llegada - element.ejecucion;
+      } else {
         td4.innerHTML = null;
       }
 
       const td5 = document.createElement("td");
-      if(element.instanteFin != null){
-        td5.innerHTML = ((element.instanteFin - element.llegada)/element.ejecucion);
-      }else{
+      if (element.instanteFin != null) {
+        td5.innerHTML =
+          (element.instanteFin - element.llegada) / element.ejecucion;
+      } else {
         td5.innerHTML = null;
       }
 
@@ -92,11 +92,10 @@ export class CPU {
       tr.appendChild(td5);
 
       tablaGeneral.appendChild(tr);
-      
     });
   }
 
-  destruirTabla(){
+  destruirTabla() {
     const tabla = document.getElementById("tablaGeneral");
     while (tabla.firstChild) {
       tabla.removeChild(tabla.firstChild);
@@ -255,6 +254,7 @@ export class FCFS {
     if (this.procesoEje != null) {
       if (this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.ejecucion) {
         this.procesoEje.estado = "final";
+        this.procesoEje.instanteFin = tiempo;
         let aux = [];
         this.colaEspera.contenido.forEach((element, index) => {
           if (element.estado == "final") {
@@ -377,6 +377,7 @@ export class SJF {
     if (this.procesoEje != null) {
       if (this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.ejecucion) {
         this.procesoEje.estado = "final";
+        this.procesoEje.instanteFin = tiempo;
         let aux = [];
         this.colaEspera.contenido.forEach((element, index) => {
           if (element.estado == "final") {
@@ -418,30 +419,6 @@ export class SJF {
         this.procesoEje.estadoTiempo.ejecucion++;
       }
     }
-
-    // let cont = 0;
-    // while (true) {
-    //   if (cont < this.colaEspera.contenido.length) {
-    //     if (
-    //       this.procesoEje == null &&
-    //       this.colaEspera.contenido[cont].estado != "bloqueado"
-    //     ) {
-    //       this.procesoEje = this.colaEspera.contenido[cont];
-    //       this.procesoEje.estado = "ejecucion";
-    //       this.procesoEje.estadoTiempo.ejecucion++;
-    //       break;
-    //     }
-    //     if (this.procesoEje != null) {
-    //       this.procesoEje.estadoTiempo.ejecucion++;
-    //       break;
-    //     }
-    //     if (this.colaEspera.contenido[cont].estado == "bloqueado") {
-    //       cont++;
-    //     }
-    //   } else {
-    //     break;
-    //   }
-    // }
 
     if (this.procesoEje != null) {
       this.grafico.agregarEstado(this.procesoEje, tiempo);
@@ -526,6 +503,7 @@ export class SRTF {
     if (this.procesoEje != null) {
       if (this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.ejecucion) {
         this.procesoEje.estado = "final";
+        this.procesoEje.instanteFin = tiempo;
         let aux = [];
         this.colaEspera.contenido.forEach((element, index) => {
           if (element.estado == "final") {
@@ -656,11 +634,11 @@ export class RR {
     this.dispacher = { estado: true, total: dispacher };
 
     const contenedorDispacher = document.getElementById("contenedor_dispacher");
-    contenedorDispacher.innerHTML = "Quantum = "+dispacher;
+    contenedorDispacher.innerHTML = "Quantum = " + dispacher;
 
     const buttonDispacher = document.createElement("button");
     buttonDispacher.innerHTML = "Cambiar";
-    buttonDispacher.setAttribute("onclick","cambiarDispacher()")
+    buttonDispacher.setAttribute("onclick", "cambiarDispacher()");
 
     contenedorDispacher.appendChild(buttonDispacher);
   }
@@ -705,8 +683,8 @@ export class RR {
     });
 
     //Verificar si el proceso en ejecucion ya termino
-    if(this.procesoEje != null){
-      if(this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion){
+    if (this.procesoEje != null) {
+      if (this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion) {
         this.procesoEje.estado = "final";
         this.procesoEje.instanteFin = tiempo;
         this.procesoEje = null;

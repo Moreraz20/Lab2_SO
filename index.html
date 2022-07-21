@@ -53,20 +53,21 @@
                 <thead>
                     <tr>
                         <th>Proceso</th>
-                        <th>Instante llegada</th>
-                        <th>Ejecución t</th>
-                        <th>Bloqueo</th>
-                        <th>Bloqueo</th>
+                        <th>Instante fin</th>
+                        <th>Retorno</th>
+                        <th>Tiempo Perdido</th>
+                        <th>Penalidad</th>
+                        <!-- <th>Tiempo Respuesta</th> -->
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tablaGeneral">
                 <tbody>
             </table>
         </div>
         <div class="grafico">
             <div id="contenedorGrafico" class="contenedorGrafico"></div>
         </div>
-        <div id="contenedor_boton">
+        <div id="contenedor_boton" class="contenedorBoton">
             <button onclick="correrAlgoritmo()" id="boton_empezar">Empezar</button>
         </div>
     </div>
