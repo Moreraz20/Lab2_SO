@@ -1,4 +1,4 @@
-import Proceso, { CPU, FCFS, Grafico } from "./clases.js";
+import Proceso, { CPU, SJF, Grafico } from "../clases.js";
 
 let identificardor;
 
@@ -18,7 +18,7 @@ window.correrAlgoritmo = function correrAlgoritmo() {
   botonDetener.setAttribute("onclick", "detenerAlgoritmo()");
 
   contenedorBoton.appendChild(botonDetener);
-  identificardor = setInterval(tempo, 1000);
+  identificardor = setInterval(tempo, 500);
 };
 
 window.detenerAlgoritmo = function detenerAlgoritmo() {
@@ -64,12 +64,15 @@ const contenedorGrafico = document.getElementById("contenedorGrafico");
 
 grafico.crearProceso(listaProcesos, contenedorGrafico);
 
-const fcfs = new FCFS(listaProcesos, grafico);
+const sjf = new SJF(listaProcesos, grafico);
 
 let cont = 0;
 
 function tempo() {
-  if (fcfs.ejecutar(cont)) {
+  /*************************************************************************************************************/
+  console.log("Contado:",cont);
+  /*************************************************************************************************************/
+  if (sjf.ejecutar(cont)) {
     clearInterval(identificardor);
   }
   cont++;

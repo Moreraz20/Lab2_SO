@@ -40,6 +40,8 @@ export default class Proceso {
       tablaAntigua.removeChild(tablaAntigua.firstChild);
     }
   }
+
+  agregarGeneral(tabla) {}
 }
 
 export class CPU {
@@ -108,7 +110,7 @@ export class Grafico {
 
     divEstado.setAttribute("style", "grid-column: " + (tiempo + 2) + ";");
     divContenedor.appendChild(divEstado);
-    const divContenedorNum = document.getElementById("grafico_proceso_numeros")
+    const divContenedorNum = document.getElementById("grafico_proceso_numeros");
     let divNum = document.getElementById("numero_" + tiempo);
     if (divNum) {
     } else {
@@ -180,10 +182,19 @@ export class FCFS {
       });
     }
 
+    //Verificar si el proceso ya termino
     if (this.procesoEje != null) {
       if (this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.ejecucion) {
         this.procesoEje.estado = "final";
-        this.colaEspera.deencolar();
+        let aux = [];
+        this.colaEspera.contenido.forEach((element, index) => {
+          if (element.estado == "final") {
+            aux.push(index);
+          }
+        });
+        aux.forEach((element) => {
+          this.colaEspera.contenido.splice(element, 1);
+        });
         this.procesoEje = null;
       }
     }
@@ -207,23 +218,31 @@ export class FCFS {
         if (this.colaEspera.contenido[cont].estado == "bloqueado") {
           cont++;
         }
+      } else {
+        break;
       }
     }
 
-    this.grafico.agregarEstado(this.procesoEje, tiempo);
+    if (this.procesoEje != null) {
+      this.grafico.agregarEstado(this.procesoEje, tiempo);
 
-    //Verificar si el proceso entra a bloqueo
-    if (
-      this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.bloqueo.inicio
-    ) {
-      this.procesoEje.estado = "bloqueado";
-      this.listBloqueo.push(this.procesoEje);
-      this.procesoEje = null;
+      //Verificar si el proceso entra a bloqueo
+      if (
+        this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.bloqueo.inicio
+      ) {
+        this.procesoEje.estado = "bloqueado";
+        this.listBloqueo.push(this.procesoEje);
+        this.procesoEje = null;
+      }
     }
 
     //Agregar los espacios de espera y vacios al diagrama
     this.listProcesos.forEach((element) => {
-      if (element.estado == "vacio" || element.estado == "espera") {
+      if (
+        element.estado == "vacio" ||
+        element.estado == "espera" ||
+        element.estado == "final"
+      ) {
         this.grafico.agregarEstado(element, tiempo);
       }
     });
@@ -240,6 +259,7 @@ export class FCFS {
       this.listBloqueo.splice(element, 1);
     });
 
+    //Verificar cuantos procesos no han finalizado
     let contFinal = 0;
     this.listProcesos.forEach((element) => {
       if (element.estado != "final") {
@@ -248,13 +268,159 @@ export class FCFS {
     });
 
     /*************************************************************************************************************/
-    console.log(
-      "Cola",
-      JSON.parse(JSON.stringify(this.colaEspera)),
-      "lista",
-      JSON.parse(JSON.stringify(this.listProcesos))
-    );
-    /*************************************************************************************************************/
+
+    if (contFinal > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
+export class SJF {
+  constructor(listProcesos, grafico) {
+    this.listProcesos = listProcesos;
+    this.grafico = grafico;
+    this.colaEspera = new Cola();
+    this.listBloqueo = [];
+    this.procesoEje = null;
+    this.cpu = new CPU(null, null, null, null, null, null, null);
+  }
+
+  ejecutar(tiempo) {
+    //Agregar los procesos a la cola de espera cuando lleguen
+    this.listProcesos.forEach((element) => {
+      if (element.llegada == tiempo) {
+        this.colaEspera.encolar(element);
+        element.estado = "espera";
+      }
+    });
+
+    //Colocar los procesos bloqueados en el grafico
+    if (this.listBloqueo.length > 0) {
+      this.listBloqueo.forEach((element, index) => {
+        this.grafico.agregarEstado(element, tiempo);
+        element.estadoTiempo.bloqueo++;
+      });
+    }
+
+    //Verificar si el proceso ya termino
+    if (this.procesoEje != null) {
+      if (this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.ejecucion) {
+        this.procesoEje.estado = "final";
+        let aux = [];
+        this.colaEspera.contenido.forEach((element, index) => {
+          if (element.estado == "final") {
+            aux.push(index);
+          }
+        });
+        aux.forEach((element) => {
+          this.colaEspera.contenido.splice(element, 1);
+        });
+        this.procesoEje = null;
+      }
+    }
+
+    
+
+    //Se elige elproceso mas corto
+    if (!this.colaEspera.colaVacia() && this.procesoEje == null) {
+      let auxCont = 0;
+      while (
+        auxCont < (this.colaEspera.contenido.length - 1 ) &&
+        this.colaEspera.contenido[auxCont].estado == "bloqueado"
+      ) {
+        auxCont++;
+      }
+      let auxproceso = this.colaEspera.contenido[auxCont];
+      if (auxproceso.estado == "espera") {
+        this.colaEspera.contenido.forEach((element) => {
+          if (
+            element.ejecucion < auxproceso.ejecucion &&
+            element.estado == "espera"
+          ) {
+            auxproceso = element;
+          }
+        });
+        this.procesoEje = auxproceso;
+        this.procesoEje.estado = "ejecucion";
+        this.procesoEje.estadoTiempo.ejecucion++;
+      }
+    } else {
+      if (this.procesoEje != null) {
+        this.procesoEje.estadoTiempo.ejecucion++;
+      }
+    }
+
+    // let cont = 0;
+    // while (true) {
+    //   if (cont < this.colaEspera.contenido.length) {
+    //     if (
+    //       this.procesoEje == null &&
+    //       this.colaEspera.contenido[cont].estado != "bloqueado"
+    //     ) {
+    //       this.procesoEje = this.colaEspera.contenido[cont];
+    //       this.procesoEje.estado = "ejecucion";
+    //       this.procesoEje.estadoTiempo.ejecucion++;
+    //       break;
+    //     }
+    //     if (this.procesoEje != null) {
+    //       this.procesoEje.estadoTiempo.ejecucion++;
+    //       break;
+    //     }
+    //     if (this.colaEspera.contenido[cont].estado == "bloqueado") {
+    //       cont++;
+    //     }
+    //   } else {
+    //     break;
+    //   }
+    // }
+
+    if (this.procesoEje != null) {
+      this.grafico.agregarEstado(this.procesoEje, tiempo);
+
+      //Verificar si el proceso entra a bloqueo
+      if (
+        this.procesoEje.estadoTiempo.ejecucion == this.procesoEje.bloqueo.inicio
+      ) {
+        this.procesoEje.estado = "bloqueado";
+        this.listBloqueo.push(this.procesoEje);
+        this.procesoEje = null;
+      }
+    }
+
+    
+
+    //Agregar los espacios de espera y vacios al diagrama
+    this.listProcesos.forEach((element) => {
+      if (
+        element.estado == "vacio" ||
+        element.estado == "espera" ||
+        element.estado == "final"
+      ) {
+        this.grafico.agregarEstado(element, tiempo);
+      }
+    });
+
+    //Verificar si el proceso bloqueado ya termino el bloqueo
+    let auxIndex = [];
+    this.listBloqueo.forEach((element, index) => {
+      if (element.estadoTiempo.bloqueo == element.bloqueo.duracion) {
+        auxIndex.push(index);
+        element.estado = "espera";
+      }
+    });
+    auxIndex.forEach((element) => {
+      this.listBloqueo.splice(element, 1);
+    });
+
+    //Verificar cuantos procesos no han finalizado
+    let contFinal = 0;
+    this.listProcesos.forEach((element) => {
+      if (element.estado != "final") {
+        contFinal++;
+      }
+    });
 
     if (contFinal > 0) {
       return false;
