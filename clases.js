@@ -6,6 +6,8 @@ export default class Proceso {
     this.bloqueo = bloqueo;
     this.estado = estado;
     this.estadoTiempo = { ejecucion: 0, bloqueo: 0, dispacher: 0 };
+    this.instanteFin = null;
+    this.respuesta = null;
   }
 
   agregarTabla(tabla) {
@@ -46,21 +48,59 @@ export default class Proceso {
 
 export class CPU {
   constructor(
-    encendido,
-    desocupada,
-    promRetorno,
-    promEjecucion,
-    promEspera,
-    promTiempoPerdido
+    listaproceso
   ) {
-    this.contador;
-    this.encendido = encendido;
-    this.desocupada = desocupada;
-    this.tiempoTotal = encendido - desocupada;
-    this.promRetorno = promRetorno;
-    this.promEjecucion = promEjecucion;
-    this.promEspera = promEspera;
-    this.promTiempoPerdido = promTiempoPerdido;
+    this.listaproceso = listaproceso;
+  }
+  construirTabla(){
+    const tablaGeneral = document.getElementById("tablaGeneral");
+    this.destruirTabla();
+    this.listaproceso.forEach(element => {
+      const tr = document.createElement("tr");
+
+      const td = document.createElement("td");
+      td.innerHTML = element.nombre;
+
+      const td2 = document.createElement("td");
+      td2.innerHTML = element.instanteFin;
+
+      const td3 = document.createElement("td");
+      if(element.instanteFin != null){
+        td3.innerHTML = (element.instanteFin - element.llegada);
+      }else{
+        td3.innerHTML = null;
+      }
+
+      const td4 = document.createElement("td");
+      if(element.instanteFin != null){
+        td4.innerHTML = ((element.instanteFin - element.llegada)-element.ejecucion);
+      }else{
+        td4.innerHTML = null;
+      }
+
+      const td5 = document.createElement("td");
+      if(element.instanteFin != null){
+        td5.innerHTML = ((element.instanteFin - element.llegada)/element.ejecucion);
+      }else{
+        td5.innerHTML = null;
+      }
+
+      tr.appendChild(td);
+      tr.appendChild(td2);
+      tr.appendChild(td3);
+      tr.appendChild(td4);
+      tr.appendChild(td5);
+
+      tablaGeneral.appendChild(tr);
+      
+    });
+  }
+
+  destruirTabla(){
+    const tabla = document.getElementById("tablaGeneral");
+    while (tabla.firstChild) {
+      tabla.removeChild(tabla.firstChild);
+    }
   }
 }
 
@@ -614,6 +654,15 @@ export class RR {
     this.procesoEje = null;
     this.cpu = new CPU(null, null, null, null, null, null, null);
     this.dispacher = { estado: true, total: dispacher };
+
+    const contenedorDispacher = document.getElementById("contenedor_dispacher");
+    contenedorDispacher.innerHTML = "Quantum = "+dispacher;
+
+    const buttonDispacher = document.createElement("button");
+    buttonDispacher.innerHTML = "Cambiar";
+    buttonDispacher.setAttribute("onclick","cambiarDispacher()")
+
+    contenedorDispacher.appendChild(buttonDispacher);
   }
 
   ejecutar(tiempo) {
@@ -633,14 +682,11 @@ export class RR {
       });
     }
 
-    //Verificar si el proceso ya termino
+    //Verificar si el proceso en iostya de espera ya termino
     this.colaEspera.contenido.forEach((element) => {
       if (element.estadoTiempo.ejecucion >= element.ejecucion) {
         element.estado = "final";
-        /*************************************************************************************************************/
-        console.log("Comprobacion:");
-        console.log(JSON.parse(JSON.stringify(element)));
-        /*************************************************************************************************************/
+        element.instanteFin = tiempo;
       }
       let aux = [];
       this.colaEspera.contenido.forEach((element2, index) => {
@@ -658,59 +704,15 @@ export class RR {
       }
     });
 
+    //Verificar si el proceso en ejecucion ya termino
     if(this.procesoEje != null){
       if(this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion){
         this.procesoEje.estado = "final";
+        this.procesoEje.instanteFin = tiempo;
         this.procesoEje = null;
         this.dispacher.estado = true;
       }
     }
-
-    // if (this.procesoEje != null) {
-    //   if (this.procesoEje.estadoTiempo.ejecucion >= this.procesoEje.ejecucion) {
-    //     this.procesoEje.estado = "final";
-    //     let aux = [];
-    //     this.colaEspera.contenido.forEach((element, index) => {
-    //       if (element.estado == "final") {
-    //         aux.push(index);
-    //       }
-    //     });
-    //     aux.forEach((element) => {
-    //       this.colaEspera.contenido.splice(element, 1);
-    //     });
-    //     this.procesoEje = null;
-    //   }
-    // }
-
-    //Se elige elproceso mas corto
-    // if (!this.colaEspera.colaVacia() && this.procesoEje == null) {
-    //   let auxCont = 0;
-    //   while (
-    //     auxCont < this.colaEspera.contenido.length - 1 &&
-    //     this.colaEspera.contenido[auxCont].estado == "bloqueado"
-    //   ) {
-    //     auxCont++;
-    //   }
-    //   let auxproceso = this.colaEspera.contenido[auxCont];
-    //   if (auxproceso.estado == "espera") {
-    //     this.colaEspera.contenido.forEach((element) => {
-    //       if (
-    //         element.ejecucion - element.estadoTiempo.ejecucion <
-    //           auxproceso.ejecucion - auxproceso.estadoTiempo.ejecucion &&
-    //         element.estado == "espera"
-    //       ) {
-    //         auxproceso = element;
-    //       }
-    //     });
-    //     this.procesoEje = auxproceso;
-    //     this.procesoEje.estado = "ejecucion";
-    //     this.procesoEje.estadoTiempo.ejecucion++;
-    //   }
-    // } else {
-    //   if (this.procesoEje != null) {
-    //     this.procesoEje.estadoTiempo.ejecucion++;
-    //   }
-    // }
 
     if (this.procesoEje != null) {
       if (this.procesoEje.estado == "final") {
@@ -721,6 +723,7 @@ export class RR {
 
     if (!this.dispacher.estado) {
       while (true) {
+        //Asignar un proceso en ejecución
         if (this.procesoEje == null) {
           if (!this.colaEspera.colaVacia()) {
             this.procesoEje = this.colaEspera.deencolar();
@@ -730,6 +733,7 @@ export class RR {
           }
           break;
         }
+        //Ejecutar el proceso en ejecucion
         if (this.procesoEje != null) {
           this.procesoEje.estadoTiempo.ejecucion++;
           this.procesoEje.estadoTiempo.dispacher++;
@@ -739,6 +743,7 @@ export class RR {
     }
 
     if (this.procesoEje != null || this.dispacher.estado == true) {
+      //Hacer el dispacher
       if (this.dispacher.estado) {
         this.grafico.agregarDispatcher(tiempo);
         this.dispacher.estado = false;
@@ -807,8 +812,8 @@ export class RR {
     });
 
     /*************************************************************************************************************/
-    // console.log("Cola de espera:");
-    // console.log(JSON.parse(JSON.stringify(this.colaEspera.contenido)));
+    console.log("Cola de espera:");
+    console.log(JSON.parse(JSON.stringify(this.colaEspera.contenido)));
     /*************************************************************************************************************/
 
     if (contFinal > 0) {

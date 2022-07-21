@@ -5,11 +5,15 @@ body {
 }
 
 .todo {
-    margin-top: 100px;
+    margin-top: 80px;
     display: grid;
-    grid-template-columns: 400px auto;
+    grid-template-columns: 300px auto;
     grid-gap: 10px;
     grid-auto-rows: minmax(auto);
+}
+
+caption{
+    font-size: x-large;
 }
 
 .tabla {
@@ -24,13 +28,13 @@ body {
     border: 1px solid #C0C0C0;
     padding: 5px;
     background: #F0F0F0;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .tabla td {
     border: 1px solid #C0C0C0;
     padding: 5px;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .tablaProcesos {
@@ -43,12 +47,36 @@ body {
     grid-column: 2;
 }
 
-.grafico {
-    margin: 40px 0px 0px 0px;
-    grid-column: 1 / 3;
+.form{
+    margin: 30px 0px 0px 0px;
     grid-row: 2;
+    background-color: #f2ee07ab;
+    width: auto;
+    
+}
+
+.form button{
+    margin: 0px 2px 0px 15px;
+}
+
+.formDispacher{
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-gap: 10px;
+    grid-auto-rows: minmax(auto);
+
+}
+
+.grafico {
+    margin: 30px 0px 0px 0px;
+    grid-column: 1 / 3;
+    grid-row: 3;
     width: 100%;
     height: auto;
+}
+
+.contenedorBoton{
+    grid-row: 4;
 }
 
 .contenedorGrafico {
