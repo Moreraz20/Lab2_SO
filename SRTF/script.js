@@ -1,4 +1,4 @@
-import Proceso, { CPU, SJF, Grafico } from "../clases.js";
+import Proceso, { CPU, SRTF, Grafico } from "../clases.js";
 
 let identificardor;
 
@@ -64,7 +64,7 @@ const contenedorGrafico = document.getElementById("contenedorGrafico");
 
 grafico.crearProceso(listaProcesos, contenedorGrafico);
 
-const sjf = new SJF(listaProcesos, grafico);
+const srtf = new SRTF(listaProcesos, grafico);
 
 let cont = 0;
 
@@ -72,7 +72,7 @@ function tempo() {
   /*************************************************************************************************************/
   console.log("Contado:",cont);
   /*************************************************************************************************************/
-  if (sjf.ejecutar(cont)) {
+  if (srtf.ejecutar(cont)) {
     clearInterval(identificardor);
   }
   cont++;
