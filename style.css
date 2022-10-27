@@ -25,14 +25,15 @@ caption{
 }
 
 .tabla th {
-    border: 1px solid #C0C0C0;
+    border: 1px solid #000000;
     padding: 5px;
-    background: #F0F0F0;
+    background: #777676;
     font-size: 14px;
 }
 
 .tabla td {
-    border: 1px solid #C0C0C0;
+    border: 1px solid #000000;
+    background: #777676;
     padding: 5px;
     font-size: 12px;
     text-align: center;
@@ -42,8 +43,8 @@ td button {
     border-radius: 10px;
     cursor: pointer;
     margin-left: 2px;
-    border: 1px solid #e8241a ;
-    color: #e8241a;
+    border: 1px solid #ffffff ;
+    color: #ffffff;
 }
 
 .tablaProcesos {
@@ -108,20 +109,20 @@ td button {
 
 .espera {
     border: 2px solid #000000;
-    background-color: rgb(213, 209, 209);
+    background-color: rgb(38, 201, 179);
     max-width: 50px;
     min-width: 25px;
 }
 
 .ejecucion {
     border: 2px solid #000000;
-    background-color: green;
+    background-color: rgb(19, 204, 19);
     max-width: 50px;
     min-width: 25px;
 }
 
 .vacio {
-    border: 2px solid #cbc7c7;
+    border: 2px solid #000000;
     max-width: 50px;
     min-width: 25px;
 }
@@ -134,7 +135,7 @@ td button {
 }
 
 .final {
-    border: 2px solid #cbc7c7;
+    border: 2px solid #000000;
     max-width: 50px;
     min-width: 25px;
 }
@@ -154,13 +155,13 @@ td button {
     top: 0;
     /*left: -100%;*/
     right: -100%;
-    height: 100%;
+    height: 8%;
     width: 100%;
-    background: #000;
+    background: #000000;
     /*background: linear-gradient(90deg, #f92c78, #4114a1);*/
     /* background: linear-gradient(375deg, #1cc7d0, #2ede98); */
     /* background: linear-gradient(-45deg, #e3eefe 0%, #efddfb 100%);*/
-    transition: all 0.6s ease-in-out;
+    transition: all 0s ease-in-out;
 }
 
 #active:checked~.wrapper {
@@ -185,7 +186,7 @@ td button {
     /*background: linear-gradient(90deg, #f92c78, #4114a1);*/
     /* background: linear-gradient(375deg, #1cc7d0, #2ede98); */
     /* background: linear-gradient(-45deg, #e3eefe 0%, #efddfb 100%); */
-    transition: all 0.3s ease-in-out;
+    transition: all 0.0s ease-in-out;
 }
 
 .menu-btn span,
@@ -242,12 +243,8 @@ td button {
     text-align: center;
 }
 
-.wrapper ul li {
-    height: 10%;
-    margin: 15px 0;
-}
 
-.wrapper ul li a {
+.wrapper ul a {
     text-decoration: none;
     font-size: 30px;
     font-weight: 500;
@@ -262,28 +259,14 @@ td button {
     transition: transform .6s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-.wrapper ul li a:after {
-    position: absolute;
-    content: "";
-    background: #fff;
-    /*background: linear-gradient(#14ffe9, #ffeb3b, #ff00e0);*/
-    /*background: linear-gradient(375deg, #1cc7d0, #2ede98);*/
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    border-radius: 50px;
-    transform: scaleY(0);
-    z-index: -1;
-    transition: transform 0.3s ease;
-}
 
-.wrapper ul li a:hover:after {
+
+.wrapper ul a:hover:after {
     transform: scaleY(1);
 }
 
-.wrapper ul li a:hover {
-    color: #1a73e8;
+.wrapper ul a:hover {
+    color: #e20505;
 }
 
 input[type="checkbox"] {
@@ -311,16 +294,13 @@ input[type="checkbox"] {
     font-weight: 600;
 }
 
-#active:checked~.wrapper ul li a {
+#active:checked~.wrapper ul a {
     opacity: 1;
 }
 
-.wrapper ul li a {
-    transition: opacity 1.2s, transform 1.2s cubic-bezier(0.215, 0.61, 0.355, 1);
-    transform: translateX(100px);
-}
 
-#active:checked~.wrapper ul li a {
+
+#active:checked~.wrapper ul a {
     transform: none;
     transition-timing-function: ease, cubic-bezier(.1, 1.3, .3, 1);
     /* easeOutBackを緩めた感じ */
